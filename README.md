@@ -3,9 +3,8 @@ This repository contains files for you to 3D print adapters to use your Twisted 
 
 This stuff is **in no way endorsed or connected with Twisted Beast** - everything here is provided under the MIT licence, which means you use it all at your own risk.
 
-|   |   |   |
-|---|---|---|
 |![3D render of the large adapter](images/adapter_large.png)|![Printed and assembled adapter](images/large_printed.jpg)|![Adapter mounted on a Maestro](images/large_mounted.jpg)|
+|---|---|---
 
 
 ## Progress
