@@ -4,7 +4,7 @@ $fn=60;
 render_for_print = false;
 render_stem = true;
 render_connection_block_maestro = true;
-
+explosion_distance = 20;
 
 // Sections from bottom to top
 // each vector element is a vector of:
@@ -43,9 +43,9 @@ connection_block_clearance_above = 1;
 // additional space to leave around the connection block in the stem
 connection_block_clearance_around = 0.5;
 
+// We render slightly differently depending on the rendering mode
 if (render_for_print) {
     if (render_stem == true) {
-        
         stem_offset_x = (sections[len(sections) - 1][0] + sections[len(sections) - 1][1]) / 2;
         stem_offset_y = (sections[0][0] + sections[0][1]) / 2;
         
@@ -54,9 +54,8 @@ if (render_for_print) {
     }
     
     if (render_connection_block_maestro == true) {
-        
         if (render_stem == true) {
-            // don't overlap the stem halves!
+            // don't overlap with the stem halves!
             connection_block_offset_y = (sections[0][0] + sections[0][1]) + connection_block_size[1];
             translate([0, connection_block_offset_y]) connection_block_maestro();
         } else {
@@ -65,12 +64,19 @@ if (render_for_print) {
     }
 } else {
     // preview layout
-    if (render_stem == true) { stem(); }
-    if (render_connection_block_maestro == true) { connection_block_maestro(); }
+    if (render_stem == true) {
+        
+        // Left stem
+        translate([-explosion_distance, 0, 0]) half_stem();
+        
+        // Right Stem
+        translate([explosion_distance, 0, 0]) rotate([0, 0, 180]) half_stem();
+    }
+    
+    if (render_connection_block_maestro == true) { 
+        translate([0, 0, -explosion_distance]) connection_block_maestro(); 
+    }
 }
-
-//half_stem();
-//connection_block_maestro();
 
 //
 // Renders half a stem for printing
@@ -115,7 +121,7 @@ module stem()
 }
 
 //
-// Renders the passed section
+// Renders the specified stem section
 //
 module stem_section(section) {
     if (section[4] == true) {
@@ -128,13 +134,14 @@ module stem_section(section) {
     }
 }
 
-
+//
+// Renders the shafts used to drill the side holes
+//
 module side_shafts() {
     for (hole_z = side_holes) {
         translate([0, 0, hole_z]) rotate([0, 90, 0]) cylinder(h=100, d=side_hole_diameter, center=true);
     }
 }
-
 
 //
 // Renders a connection block for the Maestro fucking machine
@@ -159,7 +166,5 @@ module connection_block_maestro() {
         
         // remove any side shaft intersections
         side_shafts();
-        
     }
-    
 }
