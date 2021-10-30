@@ -5,7 +5,7 @@ This stuff is **in no way endorsed or connected with Twisted Beast** - everythin
 
 |   |   |   |
 |---|---|---|
-|![3D render of the large adapter](img/adapter_large.png)|![Printed and assembled adapter](img/large_printed.jpg)|![Adapter mounted on a Maestro](img/large_mounted.jpg)|
+|![3D render of the large adapter](images/adapter_large.png)|![Printed and assembled adapter](images/large_printed.jpg)|![Adapter mounted on a Maestro](images/large_mounted.jpg)|
 
 
 ## Progress
