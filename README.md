@@ -3,16 +3,31 @@ This repository contains files for you to 3D print adapters to use your Twisted 
 
 This stuff is **in no way endorsed or connected with Twisted Beast** - everything here is provided under the MIT licence, which means you use it all at your own risk.
 
+------
+**Build status:** [![build status](https://github.com/0x00null/tb_mounts/actions/workflows/build-models.yml/badge.svg?branch=release)](https://github.com/0x00null/tb_mounts/actions/workflows/build-models.yml)
+
+------
+
+**Latest Release:** [Download models.zip from here](https://github.com/0x00null/tb_mounts/releases/latest)
+
+------
+
 |![3D render of the large adapter](images/adapter_large.png)|![Printed and assembled adapter](images/large_printed.jpg)|![Adapter mounted on a Maestro](images/large_mounted.jpg)|
 |---|---|---
 
 
-## Progress
-This table shows you which combination of 'size' and 'machine' can be printed:
+## Toy Types
+'Stems' are available for the following types of toy connection:
+| Type | Filename |
+| ---  |---       |
+| Twisted Beast Large | `tb_large.stl` |
+| Vac-U-Lock | `vac-u-lock.stl` |
 
-| Machine | Small | Large |
-| ---     |:---:  |:---:  |
-| LoveBotz Maestro ||✔|
+## Machines
+'Connection Blocks' are available for the following types of machine:
+| Type | Filename |
+| ---  |---       |
+| LoveBotz Maestro | `maestro.stl` |
 
 If you have any information on the threads used on other machines, let me know and I'll add a connector block!
 
@@ -60,14 +75,22 @@ You should use a strong material to make the locking pins - I use 5mm steel tube
 
 **Side holes too small for your pins?** You can drill the holes out a little - but not too much! The pin should fit snugly and not move around on it's own. Add a blob of glue to each end to make sure everything is held securely.
 
-## Customising the mount
+## Modifying the mount
 The mount is defined in an OpenSCAD file as a series of modules used to create the various parts of the mount. These all get combined together then the holes for the locking pins are 'drilled' through the final volume.
 
+Which Stem or Connection Block is created depends on the value of one or two variables.
+
 ### Setting up your enviromment
-You'll need to set up a few things to produce a custom .stl file:
+You'll need to set up a few things to produce a custom `.stl` file:
 1. Install OpenSCAD from [openscad.org](https://openscad.org)
+1. (optional unless you're running a build) Ensure openscad is on your path
 1. Install the Belfry OpenScad Library (used for threads) from [their github repo](https://github.com/revarbat/BOSL#installation)
 1. Open mount.scad from the 'openscad' folder in this repo
+
+### Building
+If you want to perform a local build of all stems and connection blocks, run `node build.js`. You'll get a collection of Stem and Connection Block `.stl` files in the `output` folder, oriented for printing.
+
+If you only want to generate a single model or two, open `mount.scad` from the `openscad` folder and start hacking.
 
 ### Output Settings
 Key settings are at the top of the file:
@@ -90,7 +113,7 @@ When `maestro`, a Maestro connection block is rendered.
 ### Basic Customisation
 The settings you're most likely to need to change are the size and position of the pin holes to account for larger or smaller pins.
 
-The `side_holes` vector contains the Z offsets of the holes, from bottom to top. Be careful when changing the bottom-most hole - it needs to pass through the top of the connector block, holding it in place and preventing it from sliding out of the bottom of the stem when in use.
+The `side_holes` vector contains the Z offsets of the holes, from bottom to top. **Be careful when changing the bottom-most hole** - it needs to pass through the top of the connector block, holding it in place and preventing it from sliding out of the bottom of the stem when in use.
 
 The `side_hole_diameter` variable controls the size of the holes generated. It should .1mm to .2mm larger than the actual size of your pins.
 
