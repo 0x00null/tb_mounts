@@ -1,5 +1,9 @@
 name: build-models
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+
 jobs:
   render-models:
     runs-on: ubuntu-latest
@@ -21,8 +25,16 @@ jobs:
       - name: Run Build script
         run: node build.js
       
+      - name: Create Tag
+        id: create_tag
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: release
+          name: ${{ steps.create_tag.outputs.new_version }}
+          tag_name: ${{ steps.create_tag.outputs.new_tag }}
+          body: ${{ steps.create_tag.outputs.changelog }}
           files: output/**
