@@ -15,8 +15,10 @@ jobs:
       - name: Install OpenSCAD
         run: apt-get update && apt-get install -y --no-install-recommends openscad
       
-      - name: Run Build Script
+      - name: Install NPM Packages
         run: npm install
+
+      - name: Run Build script
         run: node build.js
       
       - name: Create Release
