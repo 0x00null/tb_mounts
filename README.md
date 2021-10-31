@@ -51,7 +51,7 @@ You should use a strong material to make the locking pins - I use 5mm steel tube
 1. Grab the correct size .stl from the 'stems' folder
 1. Print the two halves of the stem using a rotating rectilinear infill at 30%
 1. Grab the correct connector block .stl from the 'connectors' folder
-1. Print the connector block at 100% infill (print it upright!)
+1. Print the connector block at 100% infill (don't change the orientation!)
 1. Cut your pins to the correct size (see the table below)
 1. Place your connector block into the base of the stem and push the longest pin through the hole
 1. Place the rest of the pins in to their holes
@@ -75,14 +75,17 @@ Key settings are at the top of the file:
 #### `render_for_print`
 When `true`, selected components are laid out for printing. When `false`, components are assembled as a preview of the completed mount.
 
-### `explosion_distance`
+#### `explosion_distance`
 The amount to 'explode' the model when rendering in preview mode
 
-#### `render_stem`
-When `true`, the stem is rendered
+#### `stem_type`
+When `none`, no stem is rendered.
+When `tb_large`, a Twisted Beast Large stem is rendered.
+When `vac-u-lock`, a Vac-U-Lock compatible stem is rendered.
 
-#### `render_connection_block_maestro`
-When `true`, the connection block for a 'maestro' machine is rendered
+#### `connection_block_type`
+When `none`, no connection block is rendered.
+When `maestro`, a Maestro connection block is rendered.
 
 ### Basic Customisation
 The settings you're most likely to need to change are the size and position of the pin holes to account for larger or smaller pins.
