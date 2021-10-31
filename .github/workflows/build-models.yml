@@ -39,5 +39,5 @@ jobs:
         with:
           name: ${{ steps.create_tag.outputs.new_version }}
           tag_name: ${{ steps.create_tag.outputs.new_tag }}
-          body: ${{ steps.create_tag.outputs.changelog }}
+          body: Download models.zip, then find the stem and connector block for your toy and machine
           files: models.zip
