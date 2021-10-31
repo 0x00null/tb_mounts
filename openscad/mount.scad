@@ -1,27 +1,43 @@
 include <BOSL/threading.scad>
 $fn=60;
 
-render_for_print = false;
-render_stem = true;
-render_connection_block_maestro = true;
+stem_type = "none";
+connection_block_type = "none";
+
+render_for_print = true;
 explosion_distance = 20;
 
-// Sections from bottom to top
+// Sections go from bottom to top
 // each vector element is a vector of:
 // 0: zOffset of the section
 // 1: height of the section
 // 2: d1 - diameter of the bottom of the section
 // 3: d2 - diameter of the top of the section
 // 4: domed - whether there is a domed top to the section
-sections = [
-    [0, 40, 45, 45, false],
-    [40, 23, 23, 23, false],
-    [63, 20, 26, 24, false],
-    [83, 24, 20, 19, false],
-    [107, 20, 24, 23, false],
-    [127, 10, 17, 15, false],
-    [137, 32, 22, 20, true],
+stem_types = [
+    [
+        "tb_large",
+        [
+            [0, 40, 45, 45, false], // base for connection block
+            [40, 23, 23, 23, false],
+            [63, 20, 26, 24, false],
+            [83, 24, 20, 19, false],
+            [107, 20, 24, 23, false],
+            [127, 10, 17, 15, false],
+            [137, 32, 22, 20, true],
+        ]
+    ],
+    [
+        "vac-u-lock",
+        [
+            [0, 40, 45, 45, false], // base for connection block
+            [40, 25.62, 20.32, 20.32, false],
+            [65.62, 20.32, 25.4, 21.59, false],
+            [85.94, 36.2, 27.43, 21.59, true]
+        ]
+    ]
 ];
+
 
 // z locations of side holes, from bottom to top
 side_holes = [
@@ -44,37 +60,60 @@ connection_block_clearance_above = 1;
 connection_block_clearance_around = 0.5;
 
 // We render slightly differently depending on the rendering mode
-if (render_for_print) {
-    if (render_stem == true) {
-        stem_offset_x = (sections[len(sections) - 1][0] + sections[len(sections) - 1][1]) / 2;
-        stem_offset_y = (sections[0][0] + sections[0][1]) / 2;
+if (render_for_print == true) {
+    
+    // In print layout, we render the stem in two halves, face down on the bed
+    if (stem_type != "none") {
         
-        translate([-stem_offset_x, -stem_offset_y]) rotate([0, 90, 0]) half_stem();
-        translate([stem_offset_x, stem_offset_y]) rotate([0, 90, 180]) half_stem();
+        // we need to arrange the stem pieces nicely
+        // Find the stem to render, then pass its sections to the render_sections module
+        for(t = stem_types) {
+            if (t[0] == stem_type) { // t[0] is the string name of the stem type
+                
+                // stem offsets are used to arrange the stems
+                // t[1] is the vector of sections
+                // t[1][0] is the mottom most section
+                // t[1][0][0] is the z offset of the bottommost section
+                
+                // offset_x is based on the overall height of the stem
+                // offset_y is based on the width of the first section (as it's the widest!)
+        
+                // zOffset of the topmost section, plus it's height
+                stem_offset_x = (t[1][len(t[1]) - 1][0] + t[1][len(t[1]) - 1][1]) / 2;        
+                
+                // width of the bottommost section
+                stem_offset_y = (t[1][0][2]) / 2;
+                
+                translate([-stem_offset_x, -stem_offset_y]) rotate([0, 90, 0]) half_stem();
+                translate([stem_offset_x, stem_offset_y]) rotate([0, 90, 180]) half_stem();
+            }
+        }
+        
+        
     }
     
-    if (render_connection_block_maestro == true) {
-        if (render_stem == true) {
+    if (connection_block_type != "none") {
+        if (stem_type != "none") {
             // don't overlap with the stem halves!
-            connection_block_offset_y = (sections[0][0] + sections[0][1]) + connection_block_size[1];
-            translate([0, connection_block_offset_y]) connection_block_maestro();
+            // Take the first diameter of the first section of the first type of stem as a rough guess
+            connection_block_offset_y = (stem_types[0][1][0][2]) + connection_block_size[1];
+            translate([0, connection_block_offset_y]) connection_block();
         } else {
-            connection_block_maestro();
+            connection_block();
         }
     }
+    
 } else {
-    // preview layout
-    if (render_stem == true) {
-        
-        // Left stem
+    
+    if (stem_type != "none") {
+        // Left half-stem
         translate([-explosion_distance, 0, 0]) half_stem();
         
-        // Right Stem
+        // Right half-stem
         translate([explosion_distance, 0, 0]) rotate([0, 0, 180]) half_stem();
     }
-    
-    if (render_connection_block_maestro == true) { 
-        translate([0, 0, -explosion_distance]) connection_block_maestro(); 
+    if (connection_block_type != "none") { 
+        translate([0, 0, -explosion_distance]) connection_block(); 
     }
 }
 
@@ -95,10 +134,10 @@ module stem()
 {
     difference() {        
         
-        // render each section
-        union() {
-            for (section = sections) {        
-                translate([0, 0, section[0]]) stem_section(section);
+        // Find the stem to render, then pass its sections to the render_sections module
+        for(t = stem_types) {
+            if (t[0] == stem_type) { // t[0] is the string name of the stem type
+                stem_sections(t[1]); // t[1] is the section vector for this stem type
             }
         }
         
@@ -116,6 +155,14 @@ module stem()
                     connection_block_size[0] + (2 * connection_block_clearance_above) // z
                 ]);
             }
+        }
+    }
+}
+
+module stem_sections(sections) {
+    union() {
+        for (section = sections) {      
+            translate([0, 0, section[0]]) stem_section(section);
         }
     }
 }
@@ -143,28 +190,38 @@ module side_shafts() {
     }
 }
 
+
 //
-// Renders a connection block for the Maestro fucking machine
+// Renders the appropiate module based on the specified type
+// Wouldn't it be nice if we could hold a pointer to a module in a vector... then we'd not have to do this nonsense!
 //
-module connection_block_maestro() {
-    
+module connection_block() {
     difference() {
+        
         rotate([0, 0, 45]) { // as above, the connection block is rotated 45 degrees
-            union() {
-                difference() {
-                    // the block itself
-                    translate([-(connection_block_size[0] / 2), -(connection_block_size[1] / 2)]) cube(connection_block_size);
-                    
-                    // void we'll fill with the thread
-                    cylinder(h=30, d=20);
-                }
-                
-                // Threaded nut to connect to the machine shaft
-                metric_trapezoidal_threaded_nut(od=23, id=17, h=30, pitch=2, bevel=true, align=V_TOP);
-            }
+            if (connection_block_type == "maestro") { connection_block_maestro(); }
         }
         
         // remove any side shaft intersections
         side_shafts();
+    }
+}
+
+
+//
+// Renders a connection block for the Maestro fucking machine
+//
+module connection_block_maestro() {
+    union() {
+        difference() {
+            // the block itself
+            translate([-(connection_block_size[0] / 2), -(connection_block_size[1] / 2)]) cube(connection_block_size);
+            
+            // void we'll fill with the thread
+            cylinder(h=30, d=20);
+        }
+        
+        // Threaded nut to connect to the machine shaft
+        metric_trapezoidal_threaded_nut(od=23, id=17, h=30, pitch=2, bevel=true, align=V_TOP);
     }
 }
