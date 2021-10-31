@@ -9,12 +9,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-        run: node build.js
 
       - name: Install OpenSCAD
         run: apt-get update && apt-get install -y --no-install-recommends openscad
       
       - name: Run Build Script
+        run: npm install
         run: node build.js
       
       - name: Create Release
