@@ -9,35 +9,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
       
       - name: Setup Node
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: '14'
 
       - name: Install Tools
-        run: sudo apt-get update
-        run: sudo apt-get install -y --no-install-recommends openscad
-        run: sudo apt-get install -y --no-install-recommends zip
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y --no-install-recommends openscad
+      - run: sudo apt-get install -y --no-install-recommends zip
       
       - name: Install NPM Packages
-        run: npm install
+      - run: npm install
 
       - name: Run Build script
-        run: node build.js
+      - run: node build.js
       
       - name: Generate zip file
-        run: zip models.zip -r output
+      - run: zip models.zip -r output
 
       - name: Create Tag
-        id: create_tag
-        uses: mathieudutour/github-tag-action@v5.6
+      - id: create_tag
+      - uses: mathieudutour/github-tag-action@v5.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           name: ${{ steps.create_tag.outputs.new_version }}
           tag_name: ${{ steps.create_tag.outputs.new_tag }}
