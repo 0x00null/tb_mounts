@@ -196,32 +196,73 @@ module side_shafts() {
 // Wouldn't it be nice if we could hold a pointer to a module in a vector... then we'd not have to do this nonsense!
 //
 module connection_block() {
-    difference() {
-        
-        rotate([0, 0, 45]) { // as above, the connection block is rotated 45 degrees
             if (connection_block_type == "maestro") { connection_block_maestro(); }
-        }
-        
-        // remove any side shaft intersections
-        side_shafts();
-    }
+            if (connection_block_type == "knuckles") { connection_block_knuckles(); }
 }
+
 
 
 //
 // Renders a connection block for the Maestro fucking machine
 //
 module connection_block_maestro() {
-    union() {
-        difference() {
-            // the block itself
-            translate([-(connection_block_size[0] / 2), -(connection_block_size[1] / 2)]) cube(connection_block_size);
+    difference() {
+        rotate([0, 0, 45]) union() { // rotate 45 for the side shaft to drill through properly
+            difference() {
+                // the block itself
+                translate([-(connection_block_size[0] / 2), -(connection_block_size[1] / 2)]) cube(connection_block_size);
+                
+                // void we'll fill with the thread
+                cylinder(h=30, d=20);
+            }
             
-            // void we'll fill with the thread
-            cylinder(h=30, d=20);
+            // Threaded nut to connect to the machine shaft
+            metric_trapezoidal_threaded_nut(od=23, id=17, h=30, pitch=2, bevel=true, align=V_TOP);
         }
         
-        // Threaded nut to connect to the machine shaft
-        metric_trapezoidal_threaded_nut(od=23, id=17, h=30, pitch=2, bevel=true, align=V_TOP);
+        side_shafts();
+    
+    }
+}
+
+//
+// Renders a connection block for brass knuckles
+//
+module connection_block_knuckles() {   
+    if (render_for_print == true) {
+        translate([0, 45, connection_block_size[2] / 2]) rotate([0, 90, 0]) rotate([0, 0, 45]) connection_block_knuckles_core();
+    } else {
+        connection_block_knuckles_core();
+    }
+    
+}
+
+//
+// Renders the core knuckles connector in 'preview' orientation
+//
+module connection_block_knuckles_core() {
+    difference() {
+        rotate([0, 0, 45]) union() { // rotate for the side shafts to drill properly
+            translate([0, (connection_block_size[1] / 2), -(27.5 + 15)]) rotate([90, 0, 0]) union() {
+                // Stack the knuckles to be the same depth as the connector block
+                // the model is a little...wonky
+                connection_block_knuckles_import();
+                translate([0, 0, connection_block_size[2] - 22.9744]) connection_block_knuckles_import();
+            }
+            
+            // the block itself
+            translate([-(connection_block_size[0] / 2), -(connection_block_size[1] / 2), -15]) cube([connection_block_size[0], connection_block_size[1], connection_block_size[2] + 15]);
+        }
+        side_shafts();
+    }
+}
+
+//
+// Renders the resized knuckles model
+//
+module connection_block_knuckles_import() {
+    render() intersection() {
+        translate([0, 0, 12.01]) import("./assets/knuckles/files/bower.stl");
+        translate([-150, -150, 0]) cube([300, 300, 20]);
     }
 }
