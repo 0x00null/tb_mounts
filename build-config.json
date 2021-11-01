@@ -1,10 +1,12 @@
 {
     "stems" : [
-        "vac-u-lock",
-        "tb_large"
+        { "name" : "vac-u-lock" },
+        { "name" : "tb_large" }
     ],
 
     "connection_blocks" : [
-        "maestro"
+        { "name": "maestro" },
+        { "name": "knuckles", "licence": "Knuckles by everysecond is licensed under the Creative Commons - Attribution license. See https://www.thingiverse.com/thing:2988132" }
+        
     ]
 }

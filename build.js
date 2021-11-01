@@ -5,7 +5,7 @@ const fs = require('fs');
 const commandExists = require('command-exists');
 const execa = require('execa');
 
-async function run() {
+async function run(args) {
     log.info('SETUP', 'Setting up for build...');
 
     // Check openscad is on the path
@@ -68,15 +68,15 @@ async function run() {
 
     // Add each stem type
     for (const stemType of config.stems) {
-        customiser.parameterSets[`stem_${stemType}`] = {
-            stem_type : stemType
+        customiser.parameterSets[`stem_${stemType.name}`] = {
+            stem_type : stemType.name
         }
     };
 
     // Add each connection block type
     for (const blockType of config.connection_blocks) {
-        customiser.parameterSets[`block_${blockType}`] = {
-            connection_block_type : blockType
+        customiser.parameterSets[`block_${blockType.name}`] = {
+            connection_block_type : blockType.name
         }
     };
 
@@ -129,15 +129,18 @@ async function run() {
     // Render each stem
     for (const stemType of config.stems) {
         
-        const outPath = `${stemOutputBasePath}/${stemType}.stl`;
+        const outPath = `${stemOutputBasePath}/${stemType.name}.stl`;
         
-        log.info('RENDER', `🌻 Rendering stem '${stemType}' to ${outPath}...`);
+        log.info('RENDER', `🌻 Rendering stem '${stemType.name}' to ${outPath}...`);
+        if (stemType.licence !== undefined && stemType.licence !== null) {
+            log.info('RENDER', `  ❤ ${stemType.licence}`);
+        }
         // log.info(`openscad -p ${customiserPath} -P stem_${stemType} -o ${outPath} ${scadFilePath}`);
 
         try {
         await execa('openscad', [
             '-p', customiserPath, 
-            '-P', `stem_${stemType}`,
+            '-P', `stem_${stemType.name}`,
             '-o', outPath,
             scadFilePath]);
         } catch (ex) {
@@ -150,13 +153,17 @@ async function run() {
 
     for (const blockType of config.connection_blocks) {
         
-        const outPath = `${blockOutputBasePath}/${blockType}.stl`;
+        const outPath = `${blockOutputBasePath}/${blockType.name}.stl`;
         
-        log.info('RENDER', `🧊 Rendering connection block '${blockType}' to ${outPath}...`);
+        log.info('RENDER', `🧊 Rendering connection block '${blockType.name}' to ${outPath}...`);
+        if (blockType.licence !== undefined && blockType.licence !== null) {
+            log.info('RENDER', `  ❤  ${blockType.licence}`);
+        }
+
         try {
         await execa('openscad', [
             '-p', customiserPath, 
-            '-P', `block_${blockType}`,
+            '-P', `block_${blockType.name}`,
             '-o', outPath,
             scadFilePath]);
         } catch (ex) {
