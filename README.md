@@ -24,10 +24,11 @@ This stuff is **in no way endorsed or connected with Twisted Beast** - everythin
 | Vac-U-Lock | `vac-u-lock.stl` |
 
 ## Machines
-'Connection Blocks' are available for the following types of machine:
+'Connection Blocks' are available for the following types of attachment:
 | Type | Filename |
 | ---  |---       |
 | LoveBotz Maestro | `maestro.stl` |
+| Knuckle Duster | `knuckles.stl` |
 
 If you have any information on the threads used on other machines, let me know and I'll add a connector block!
 
